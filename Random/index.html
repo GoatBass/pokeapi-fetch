@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <link rel="stylesheet"
+            href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+            integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+            crossorigin="anonymous">
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="card" style="width: 26rem;">
+                <img class="card-img-top" src="pokeball.png"
+                    alt="Card image cap" data-shiny-url="" data-normal-url="">
+                <div class="card-body">
+                    <h5 class="card-title" style=" text-transform: capitalize;">
+                        Lorepokemon </h5>
+                    <div>
+                        <button class="btn btn-success">Change to Shiny</button>
+                        <button class="btn btn-info" id="normalBtn">Change to
+                            Normal</button>
+                        <button class="btn btn-warning"
+                            id="randomPokeBtn">Random
+                            Pokémon!</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <span>Type the Pokémon name
+                <input type="text" name="pokemonName" id="pokename">
+        </div>
+        <script>
+            let btn = document.querySelector( '.btn' )
+            let btnNormal = document.querySelector( '#normalBtn' )
+            let randomPoke = document.querySelector( '#randomPokeBtn' )
+            let submit = document.querySelector( '#pokename' )
+
+            btn.addEventListener( 'click', changeToShiny )
+            btnNormal.addEventListener( 'click', changeToNormal )
+            randomPoke.addEventListener( 'click', getRandomePokemon )
+
+            submit.addEventListener( 'keypress', function ( e )
+            {
+                if ( e.keyCode == 13 )
+                {
+                    getNewPokemon( event )
+                }
+            } )
+
+
+            function getNewPokemon( e )
+            {
+                let poke = e.target.value.toLowerCase()
+                const url = 'https://pokeapi.co/api/v2/pokemon/' + poke
+                fetch( url ).then( response => response.json() ).then( data => updatePokemon( data ) ).catch( error => console.log( error ) )
+            }
+
+            function updatePokemon( response )
+            {
+                let displayImage = document.querySelector( '.card-img-top' )
+                displayImage.classList.remove( 'd-none' )
+                let displayName = document.querySelector( '.card-title' )
+
+                displayName.innerHTML = response.name + ' #' + response.id
+                displayImage.src = response.sprites.front_default
+                displayImage.setAttribute( 'data-shiny-url', response.sprites.front_shiny )
+                displayImage.setAttribute( 'data-normal-url', response.sprites.front_default )
+            }
+
+            function changeToShiny()
+            {
+                let picture = document.querySelector( '.card-img-top' )
+                let shiny = picture.getAttribute( 'data-shiny-url' )
+                picture.src = shiny
+
+            }
+
+            function changeToNormal()
+            {
+                let picture = document.querySelector( '.card-img-top' )
+                let normalPicture = picture.getAttribute( 'data-normal-url' )
+                picture.src = normalPicture
+            }
+
+            function getRandomePokemon()
+            {
+                let number = Math.floor( Math.random() * 898 ) + 1
+                const url = 'https://pokeapi.co/api/v2/pokemon/' + number
+                fetch( url ).then( response => response.json() ).then( data => updatePokemon( data ) )
+            }
+        </script>
+    </body>
+
+</html>
