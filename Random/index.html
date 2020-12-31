@@ -36,15 +36,17 @@
                 <input type="text" name="pokemonName" id="pokename">
         </div>
         <script>
+            //Selectors of buttons we use and the input text field
             let btn = document.querySelector( '.btn' )
             let btnNormal = document.querySelector( '#normalBtn' )
             let randomPoke = document.querySelector( '#randomPokeBtn' )
             let submit = document.querySelector( '#pokename' )
 
+            //All event listeners to our buttons activating their selected function
             btn.addEventListener( 'click', changeToShiny )
             btnNormal.addEventListener( 'click', changeToNormal )
             randomPoke.addEventListener( 'click', getRandomePokemon )
-
+            //The submit listener has small function that checks if the key we pressed to make the submit is the Enter key, so if it is activates the function
             submit.addEventListener( 'keypress', function ( e )
             {
                 if ( e.keyCode == 13 )
@@ -53,34 +55,45 @@
                 }
             } )
 
-
+            //The function getNewPokemon is related to the submit event listener.
             function getNewPokemon( e )
             {
+                //Firs of all we transform the value we got to lowercase because our api will always read it without any uppercase, or else will give us an error
                 let poke = e.target.value.toLowerCase()
+                //then we create the url with the api url plus at the end the name of the pokemon the user introduced
                 const url = 'https://pokeapi.co/api/v2/pokemon/' + poke
+                //Then we fetch it and giving on data to activate the function UpdatePokemon that will modify our DOM
                 fetch( url ).then( response => response.json() ).then( data => updatePokemon( data ) ).catch( error => console.log( error ) )
             }
 
             function updatePokemon( response )
             {
+                //We select the two fields we are gonna use, in this case for the image and the name
                 let displayImage = document.querySelector( '.card-img-top' )
-                displayImage.classList.remove( 'd-none' )
                 let displayName = document.querySelector( '.card-title' )
 
+                //On the name field we print the name of the pokemon and his id next to him. (Remember, on the fetch we pass the data on function than inside is represented with the word response)
                 displayName.innerHTML = response.name + ' #' + response.id
+                //We tell to the image that the new source is the font_default
                 displayImage.src = response.sprites.front_default
+                //and before ending the function, we assigned to our two empty attributes of image, the respective information so we will use it a bit after
                 displayImage.setAttribute( 'data-shiny-url', response.sprites.front_shiny )
                 displayImage.setAttribute( 'data-normal-url', response.sprites.front_default )
             }
 
+            //This function is related with the change shiny button
             function changeToShiny()
             {
+                //we select the picture
                 let picture = document.querySelector( '.card-img-top' )
+                //we select the attribute we saved earlier with the shiny picture
                 let shiny = picture.getAttribute( 'data-shiny-url' )
+                //And we change the source of picture with the shiny one
                 picture.src = shiny
 
             }
 
+            //This function works exactly the same as the changeToShiny one, just inverted
             function changeToNormal()
             {
                 let picture = document.querySelector( '.card-img-top' )
@@ -88,8 +101,10 @@
                 picture.src = normalPicture
             }
 
+            //Herre we associate this function with the random button event listener
             function getRandomePokemon()
             {
+                //and this functions works the same as getNewPokemon, wit the difference of we create a random number between 1 and 898, and we add this number at the end of the url to find this random pokemon
                 let number = Math.floor( Math.random() * 898 ) + 1
                 const url = 'https://pokeapi.co/api/v2/pokemon/' + number
                 fetch( url ).then( response => response.json() ).then( data => updatePokemon( data ) )
